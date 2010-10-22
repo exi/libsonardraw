@@ -1,0 +1,51 @@
+<html>
+<head>
+<script type="text/javascript" src="./sonardraw.js"></script>
+</head>
+<body>
+<div id="canvasdiv" style="height:100%;width:100%;">wowowowow</div>
+
+<script type="text/javascript">
+SonarDraw.enableDebug = false;
+var cont = new SonarDraw.DrawContext({domElement:document.getElementById("canvasdiv")});
+var engine = new SonarDraw.DrawEngine(cont);
+var maxcircs = 50;
+var circs = [];
+var lines = [];
+
+circs[0] = engine.createObject("circle",{radius:30,position:new SonarDraw.Position(200,200)});
+for(var i=1;i<maxcircs;i++) {
+    circs[i] = engine.createObject("circle",{radius:10,position:new SonarDraw.Position(300+10*i,(100+20*i)%cont.getHeight())});
+    lines[i] = engine.createObject("line",{o1:circs[0],o2:circs[i]});
+}
+
+function cbal(data) {
+    engine.clear();
+    for(var l in lines)
+        lines[l].refresh();
+    for(var c in circs)
+        circs[c].refresh();
+    engine.bufferFlip();
+}
+
+cont.register(undefined,"onresize",cbal);
+for(var l in lines)
+    lines[l].refresh();
+for(var c in circs)
+    circs[c].refresh();
+
+function move() {
+    var i = 0;
+    for(;i<circs.length;i++) {
+        var oldpos = circs[i].getPosition().get();
+        var newX = (oldpos.x-cont.getWidth()/2+Math.random()*10-5)%(cont.getWidth()/2)+cont.getWidth()/2;
+        var newY = (oldpos.y-cont.getHeight()/2+Math.random()*10-5)%(cont.getHeight()/2)+cont.getHeight()/2;
+        circs[i].setPosition(new SonarDraw.Position(newX,newY));
+    }
+    cbal();
+}
+window.setInterval(move,1000/30);
+</script>
+
+</body>
+</html>
